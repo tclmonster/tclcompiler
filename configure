@@ -5390,7 +5390,7 @@ printf "%s\n" "$ac_cv_c_bigendian" >&6; }
 
 
 
-    vars=""
+    vars="-I"$srcdir/../tbcload""
     for i in $vars; do
 	PKG_INCLUDES="$PKG_INCLUDES $i"
     done
