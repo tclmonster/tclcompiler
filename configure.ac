@@ -27,7 +27,7 @@ AC_INIT([tclcompiler],[1.7.1])
 # as well as PKG_LIB_FILE and PKG_STUB_LIB_FILE.
 #--------------------------------------------------------------------
 
-TEA_INIT([3.9])
+TEA_INIT()
 
 AC_CONFIG_AUX_DIR(tclconfig)
 
