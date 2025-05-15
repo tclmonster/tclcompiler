@@ -2749,10 +2749,16 @@ printf "%s\n" "$as_me: WARNING: --with-tcl argument should refer to directory co
 			`ls -d /usr/pkg/lib 2>/dev/null` \
 			`ls -d /usr/lib 2>/dev/null` \
 			`ls -d /usr/lib64 2>/dev/null` \
+			`ls -d /usr/lib/tcl9.1 2>/dev/null` \
+			`ls -d /usr/lib/tcl9.0 2>/dev/null` \
 			`ls -d /usr/lib/tcl8.6 2>/dev/null` \
 			`ls -d /usr/lib/tcl8.5 2>/dev/null` \
+			`ls -d /usr/local/lib/tcl9.1 2>/dev/null` \
+			`ls -d /usr/local/lib/tcl9.0 2>/dev/null` \
 			`ls -d /usr/local/lib/tcl8.6 2>/dev/null` \
 			`ls -d /usr/local/lib/tcl8.5 2>/dev/null` \
+			`ls -d /usr/local/lib/tcl/tcl9.1 2>/dev/null` \
+			`ls -d /usr/local/lib/tcl/tcl9.0 2>/dev/null` \
 			`ls -d /usr/local/lib/tcl/tcl8.6 2>/dev/null` \
 			`ls -d /usr/local/lib/tcl/tcl8.5 2>/dev/null` \
 			; do
@@ -3797,11 +3803,11 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 printf %s "checking for existence of ${TCL_BIN_DIR}/tclConfig.sh... " >&6; }
 
     if test -f "${TCL_BIN_DIR}/tclConfig.sh" ; then
-        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: loading" >&5
+	{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: loading" >&5
 printf "%s\n" "loading" >&6; }
 	. "${TCL_BIN_DIR}/tclConfig.sh"
     else
-        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: could not find ${TCL_BIN_DIR}/tclConfig.sh" >&5
+	{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: could not find ${TCL_BIN_DIR}/tclConfig.sh" >&5
 printf "%s\n" "could not find ${TCL_BIN_DIR}/tclConfig.sh" >&6; }
     fi
 
@@ -3812,9 +3818,9 @@ printf "%s\n" "could not find ${TCL_BIN_DIR}/tclConfig.sh" >&6; }
     # instead of TCL_BUILD_LIB_SPEC since it will work with both an
     # installed and uninstalled version of Tcl.
     if test -f "${TCL_BIN_DIR}/Makefile" ; then
-        TCL_LIB_SPEC="${TCL_BUILD_LIB_SPEC}"
-        TCL_STUB_LIB_SPEC="${TCL_BUILD_STUB_LIB_SPEC}"
-        TCL_STUB_LIB_PATH="${TCL_BUILD_STUB_LIB_PATH}"
+	TCL_LIB_SPEC="${TCL_BUILD_LIB_SPEC}"
+	TCL_STUB_LIB_SPEC="${TCL_BUILD_STUB_LIB_SPEC}"
+	TCL_STUB_LIB_PATH="${TCL_BUILD_STUB_LIB_PATH}"
     elif test "`uname -s`" = "Darwin"; then
 	# If Tcl was built as a framework, attempt to use the libraries
 	# from the framework at the given location so that linking works
@@ -3931,8 +3937,11 @@ printf "%s\n" "$TEA_PLATFORM" >&6; }
 
     # The BUILD_$pkg is to define the correct extern storage class
     # handling when making this package
+    # To be able to sefely use the package name in a #define, it must not
+    # contain anything other than alphanumeric characters and underscores
+    SAFE_PKG_NAME=tclcompiler
 
-printf "%s\n" "#define BUILD_${PACKAGE_NAME} /**/" >>confdefs.h
+printf "%s\n" "#define BUILD_${SAFE_PKG_NAME} /**/" >>confdefs.h
 
     # Do this here as we have fully defined TEA_PLATFORM now
     if test "${TEA_PLATFORM}" = "windows" ; then
@@ -5964,7 +5973,7 @@ fi
 	{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: shared" >&5
 printf "%s\n" "shared" >&6; }
 	SHARED_BUILD=1
-        STUBS_BUILD=1
+	STUBS_BUILD=1
     else
 	{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: static" >&5
 printf "%s\n" "static" >&6; }
@@ -5972,11 +5981,11 @@ printf "%s\n" "static" >&6; }
 
 printf "%s\n" "#define STATIC_BUILD 1" >>confdefs.h
 
-        if test "$stubs_ok" = "yes" ; then
-          STUBS_BUILD=1
-        else
-          STUBS_BUILD=0
-        fi
+	if test "$stubs_ok" = "yes" ; then
+	  STUBS_BUILD=1
+	else
+	  STUBS_BUILD=0
+	fi
     fi
     if test "${STUBS_BUILD}" = "1" ; then
 
@@ -6403,14 +6412,14 @@ fi
 	    fi
 
 	    if test "$GCC" != "yes" ; then
-	        if test "${SHARED_BUILD}" = "0" ; then
+		if test "${SHARED_BUILD}" = "0" ; then
 		    runtime=-MT
-	        else
+		else
 		    runtime=-MD
-	        fi
-	        case "x`echo \${VisualStudioVersion}`" in
-	            x1[4-9]*)
-		        lflags="${lflags} -nodefaultlib:libucrt.lib"
+		fi
+		case "x`echo \${VisualStudioVersion}`" in
+		    x1[4-9]*)
+			lflags="${lflags} -nodefaultlib:ucrt.lib"
 
     vars="ucrt.lib"
     for i in $vars; do
@@ -6422,12 +6431,12 @@ fi
     done
 
 
-	            ;;
-	            *)
-	            ;;
-	        esac
+		    ;;
+		    *)
+		    ;;
+		esac
 
-                if test "$do64bit" != "no" ; then
+		if test "$do64bit" != "no" ; then
 		    CC="cl.exe"
 		    RC="rc.exe"
 		    lflags="${lflags} -nologo -MACHINE:${MACHINE} "
@@ -6646,7 +6655,7 @@ printf "%s\n" "$ac_cv_cross" >&6; }
 	    SHARED_LIB_SUFFIX='${TCL_TRIM_DOTS}.dll'
 
 	    TCL_LIB_VERSIONS_OK=nodots
-    	    ;;
+	    ;;
 	AIX-*)
 	    if test "$GCC" != "yes"
 then :
@@ -6658,7 +6667,7 @@ then :
 			;;
 		    *)
 			# Make sure only first arg gets _r
-		    	CC=`echo "$CC" | sed -e 's/^\([^ ]*\)/\1_r/'`
+			CC=`echo "$CC" | sed -e 's/^\([^ ]*\)/\1_r/'`
 			;;
 		esac
 		{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: Using $CC for compiling with threads" >&5
@@ -6802,11 +6811,15 @@ fi
 	    CC_SEARCH_FLAGS=""
 	    LD_SEARCH_FLAGS=""
 	    ;;
-	CYGWIN_*)
+	CYGWIN_*|MINGW32_*|MINGW64_*|MSYS_*)
 	    SHLIB_CFLAGS=""
 	    SHLIB_LD='${CC} -shared'
 	    SHLIB_SUFFIX=".dll"
-	    SHLIB_LD_LIBS="${SHLIB_LD_LIBS} -Wl,--out-implib,\$@.a"
+	    if test "${TEA_PLATFORM}" = "unix" -a  "${TCL_MAJOR_VERSION}" -gt 8 -a x"${with_tcl8}" = x; then
+		SHLIB_LD_LIBS="${SHLIB_LD_LIBS} -Wl,--out-implib,\$(patsubst cyg%.dll,lib%.dll,\$@).a"
+	    else
+		SHLIB_LD_LIBS="${SHLIB_LD_LIBS} -Wl,--out-implib,\$@.a"
+	    fi
 	    EXEEXT=".exe"
 	    do64bit_ok=yes
 	    CC_SEARCH_FLAGS=""
@@ -7122,18 +7135,18 @@ fi
 	    if test "$do64bit" = yes
 then :
 
-	        if test "$GCC" = yes
+		if test "$GCC" = yes
 then :
 
-	            { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: 64bit mode not supported by gcc" >&5
+		    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: 64bit mode not supported by gcc" >&5
 printf "%s\n" "$as_me: WARNING: 64bit mode not supported by gcc" >&2;}
 
 else $as_nop
 
-	            do64bit_ok=yes
-	            SHLIB_LD="ld -64 -shared -rdata_shared"
-	            CFLAGS="$CFLAGS -64"
-	            LDFLAGS_ARCH="-64"
+		    do64bit_ok=yes
+		    SHLIB_LD="ld -64 -shared -rdata_shared"
+		    CFLAGS="$CFLAGS -64"
+		    LDFLAGS_ARCH="-64"
 
 fi
 
@@ -7161,7 +7174,7 @@ then :
 		    LDFLAGS="$LDFLAGS $PTHREAD_LIBS"
 fi
 	    ;;
-            esac
+	    esac
 
 	    if test $doRpath = yes
 then :
@@ -7402,44 +7415,6 @@ fi
 fi
 	    # TEA specific: use LDFLAGS_DEFAULT instead of LDFLAGS
 	    SHLIB_LD='${CC} -dynamiclib ${CFLAGS} ${LDFLAGS_DEFAULT}'
-	    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking if ld accepts -single_module flag" >&5
-printf %s "checking if ld accepts -single_module flag... " >&6; }
-if test ${tcl_cv_ld_single_module+y}
-then :
-  printf %s "(cached) " >&6
-else $as_nop
-
-		hold_ldflags=$LDFLAGS
-		LDFLAGS="$LDFLAGS -dynamiclib -Wl,-single_module"
-		cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-int
-main (void)
-{
-int i;
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"
-then :
-  tcl_cv_ld_single_module=yes
-else $as_nop
-  tcl_cv_ld_single_module=no
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.beam \
-    conftest$ac_exeext conftest.$ac_ext
-		LDFLAGS=$hold_ldflags
-fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $tcl_cv_ld_single_module" >&5
-printf "%s\n" "$tcl_cv_ld_single_module" >&6; }
-	    if test $tcl_cv_ld_single_module = yes
-then :
-
-		SHLIB_LD="${SHLIB_LD} -Wl,-single_module"
-
-fi
 	    # TEA specific: link shlib with current and compatibility version flags
 	    vers=`echo ${PACKAGE_VERSION} | sed -e 's/^\([0-9]\{1,5\}\)\(\(\.[0-9]\{1,3\}\)\{0,2\}\).*$/\1\2/p' -e d`
 	    SHLIB_LD="${SHLIB_LD} -current_version ${vers:-0} -compatibility_version ${vers:-0}"
@@ -7610,11 +7585,11 @@ printf "%s\n" "#define _OE_SOCKETS 1" >>confdefs.h
 	    if test "$SHARED_BUILD" = 1
 then :
 
-	        SHLIB_LD='ld -shared -expect_unresolved "*"'
+		SHLIB_LD='ld -shared -expect_unresolved "*"'
 
 else $as_nop
 
-	        SHLIB_LD='ld -non_shared -expect_unresolved "*"'
+		SHLIB_LD='ld -non_shared -expect_unresolved "*"'
 
 fi
 	    SHLIB_SUFFIX=".so"
@@ -7889,7 +7864,7 @@ else $as_nop
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.beam \
     conftest$ac_exeext conftest.$ac_ext
-	        LDFLAGS=$hold_ldflags
+		LDFLAGS=$hold_ldflags
 fi
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $tcl_cv_ld_Bexport" >&5
 printf "%s\n" "$tcl_cv_ld_Bexport" >&6; }
@@ -8315,15 +8290,15 @@ rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
 	# See if we could use long anyway  Note that we substitute in the
 	# type that is our current guess for a 64-bit type inside this check
 	# program, so it should be modified only carefully...
-        cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+	cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
 int
 main (void)
 {
 switch (0) {
-            case 1: case (sizeof(${tcl_type_64bit})==sizeof(long)): ;
-        }
+	    case 1: case (sizeof(${tcl_type_64bit})==sizeof(long)): ;
+	}
   ;
   return 0;
 }
@@ -8474,7 +8449,7 @@ int
 main (void)
 {
 struct dirent64 *p; DIR64 d = opendir64(".");
-            p = readdir64(d); rewinddir64(d); closedir64(d);
+	    p = readdir64(d); rewinddir64(d); closedir64(d);
   ;
   return 0;
 }
@@ -8572,8 +8547,8 @@ rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
 fi
 
 			if test "x${tcl_cv_type_off64_t}" = "xyes" && \
-	        test "x${ac_cv_func_lseek64}" = "xyes" && \
-	        test "x${ac_cv_func_open64}" = "xyes" ; then
+		test "x${ac_cv_func_lseek64}" = "xyes" && \
+		test "x${ac_cv_func_open64}" = "xyes" ; then
 
 printf "%s\n" "#define HAVE_TYPE_OFF64_T 1" >>confdefs.h
 
@@ -8834,14 +8809,26 @@ rm -rf conftest*
     # substituted. (@@@ Might not be necessary anymore)
     #--------------------------------------------------------------------
 
-    PACKAGE_LIB_PREFIX8="${PACKAGE_LIB_PREFIX}"
-    PACKAGE_LIB_PREFIX9="${PACKAGE_LIB_PREFIX}tcl9"
-    if test "${TCL_MAJOR_VERSION}" -gt 8 -a x"${with_tcl8}" == x; then
+    if test "$TEA_PLATFORM" = "unix"; then
+	PACKAGE_LIB_PREFIX8="lib"
+	if test "$EXEEXT" = ".exe" -a "$SHARED_BUILD" != "0"; then
+	    PACKAGE_LIB_PREFIX9="cygtcl9"
+	else
+	    PACKAGE_LIB_PREFIX9="libtcl9"
+	fi
+    else
+	PACKAGE_LIB_PREFIX8=""
+	PACKAGE_LIB_PREFIX9="tcl9"
+    fi
+    if test "${TCL_MAJOR_VERSION}" -gt 8 -a x"${with_tcl8}" = x; then
 	PACKAGE_LIB_PREFIX="${PACKAGE_LIB_PREFIX9}"
     else
 	PACKAGE_LIB_PREFIX="${PACKAGE_LIB_PREFIX8}"
 
 printf "%s\n" "#define TCL_MAJOR_VERSION 8" >>confdefs.h
+
+
+printf "%s\n" "#define TK_MAJOR_VERSION 8" >>confdefs.h
 
     fi
     if test "${TEA_PLATFORM}" = "windows" ; then
@@ -8867,7 +8854,7 @@ printf "%s\n" "#define TCL_MAJOR_VERSION 8" >>confdefs.h
 	    eval eval "PKG_LIB_FILE=${PACKAGE_LIB_PREFIX}${PACKAGE_NAME}${UNSHARED_LIB_SUFFIX}"
 	fi
 	# Some packages build their own stubs libraries
-	if test "${TCL_MAJOR_VERSION}" -gt 8 -a x"${with_tcl8}" == x; then
+	if test "${TCL_MAJOR_VERSION}" -gt 8 -a x"${with_tcl8}" = x; then
 	    eval eval "PKG_STUB_LIB_FILE=${PACKAGE_LIB_PREFIX8}${PACKAGE_NAME}stub.a"
 	else
 	    eval eval "PKG_STUB_LIB_FILE=${PACKAGE_LIB_PREFIX8}${PACKAGE_NAME}stub${UNSHARED_LIB_SUFFIX}"
@@ -8885,20 +8872,20 @@ printf "%s\n" "#define TCL_MAJOR_VERSION 8" >>confdefs.h
 	    if test x"${TK_BIN_DIR}" != x ; then
 		SHLIB_LD_LIBS="${SHLIB_LD_LIBS} ${TK_STUB_LIB_SPEC}"
 	    fi
-	    eval eval "PKG_LIB_FILE8=lib${PACKAGE_LIB_PREFIX8}${PACKAGE_NAME}${SHARED_LIB_SUFFIX}"
-	    eval eval "PKG_LIB_FILE9=lib${PACKAGE_LIB_PREFIX9}${PACKAGE_NAME}${SHARED_LIB_SUFFIX}"
-	    eval eval "PKG_LIB_FILE=lib${PACKAGE_LIB_PREFIX}${PACKAGE_NAME}${SHARED_LIB_SUFFIX}"
+	    eval eval "PKG_LIB_FILE8=${PACKAGE_LIB_PREFIX8}${PACKAGE_NAME}${SHARED_LIB_SUFFIX}"
+	    eval eval "PKG_LIB_FILE9=${PACKAGE_LIB_PREFIX9}${PACKAGE_NAME}${SHARED_LIB_SUFFIX}"
+	    eval eval "PKG_LIB_FILE=${PACKAGE_LIB_PREFIX}${PACKAGE_NAME}${SHARED_LIB_SUFFIX}"
 	    RANLIB=:
 	else
-	    eval eval "PKG_LIB_FILE8=lib${PACKAGE_LIB_PREFIX8}${PACKAGE_NAME}${UNSHARED_LIB_SUFFIX}"
-	    eval eval "PKG_LIB_FILE9=lib${PACKAGE_LIB_PREFIX9}${PACKAGE_NAME}${UNSHARED_LIB_SUFFIX}"
-	    eval eval "PKG_LIB_FILE=lib${PACKAGE_LIB_PREFIX}${PACKAGE_NAME}${UNSHARED_LIB_SUFFIX}"
+	    eval eval "PKG_LIB_FILE8=${PACKAGE_LIB_PREFIX8}${PACKAGE_NAME}${UNSHARED_LIB_SUFFIX}"
+	    eval eval "PKG_LIB_FILE9=${PACKAGE_LIB_PREFIX9}${PACKAGE_NAME}${UNSHARED_LIB_SUFFIX}"
+	    eval eval "PKG_LIB_FILE=${PACKAGE_LIB_PREFIX}${PACKAGE_NAME}${UNSHARED_LIB_SUFFIX}"
 	fi
 	# Some packages build their own stubs libraries
-	if test "${TCL_MAJOR_VERSION}" -gt 8 -a x"${with_tcl8}" == x; then
-	    eval eval "PKG_STUB_LIB_FILE=lib${PACKAGE_LIB_PREFIX8}${PACKAGE_NAME}stub.a"
+	if test "${TCL_MAJOR_VERSION}" -gt 8 -a x"${with_tcl8}" = x; then
+	    eval eval "PKG_STUB_LIB_FILE=${PACKAGE_LIB_PREFIX8}${PACKAGE_NAME}stub.a"
 	else
-	    eval eval "PKG_STUB_LIB_FILE=lib${PACKAGE_LIB_PREFIX8}${PACKAGE_NAME}stub${UNSHARED_LIB_SUFFIX}"
+	    eval eval "PKG_STUB_LIB_FILE=${PACKAGE_LIB_PREFIX8}${PACKAGE_NAME}stub${UNSHARED_LIB_SUFFIX}"
 	fi
     fi
 
@@ -8932,37 +8919,37 @@ printf "%s\n" "#define TCL_MAJOR_VERSION 8" >>confdefs.h
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for tclsh" >&5
 printf %s "checking for tclsh... " >&6; }
     if test -f "${TCL_BIN_DIR}/Makefile" ; then
-        # tclConfig.sh is in Tcl build directory
-        if test "${TEA_PLATFORM}" = "windows"; then
-          if test -f "${TCL_BIN_DIR}/tclsh${TCL_MAJOR_VERSION}${TCL_MINOR_VERSION}${EXEEXT}" ; then
-            TCLSH_PROG="${TCL_BIN_DIR}/tclsh${TCL_MAJOR_VERSION}${TCL_MINOR_VERSION}${EXEEXT}"
-          elif test -f "${TCL_BIN_DIR}/tclsh${TCL_MAJOR_VERSION}${TCL_MINOR_VERSION}s${EXEEXT}" ; then
-            TCLSH_PROG="${TCL_BIN_DIR}/tclsh${TCL_MAJOR_VERSION}${TCL_MINOR_VERSION}s${EXEEXT}"
-          elif test -f "${TCL_BIN_DIR}/tclsh${TCL_MAJOR_VERSION}${TCL_MINOR_VERSION}t${EXEEXT}" ; then
-            TCLSH_PROG="${TCL_BIN_DIR}/tclsh${TCL_MAJOR_VERSION}${TCL_MINOR_VERSION}t${EXEEXT}"
-          elif test -f "${TCL_BIN_DIR}/tclsh${TCL_MAJOR_VERSION}${TCL_MINOR_VERSION}st${EXEEXT}" ; then
-            TCLSH_PROG="${TCL_BIN_DIR}/tclsh${TCL_MAJOR_VERSION}${TCL_MINOR_VERSION}st${EXEEXT}"
-          fi
-        else
-            TCLSH_PROG="${TCL_BIN_DIR}/tclsh"
-        fi
+	# tclConfig.sh is in Tcl build directory
+	if test "${TEA_PLATFORM}" = "windows"; then
+	  if test -f "${TCL_BIN_DIR}/tclsh${TCL_MAJOR_VERSION}${TCL_MINOR_VERSION}${EXEEXT}" ; then
+	    TCLSH_PROG="${TCL_BIN_DIR}/tclsh${TCL_MAJOR_VERSION}${TCL_MINOR_VERSION}${EXEEXT}"
+	  elif test -f "${TCL_BIN_DIR}/tclsh${TCL_MAJOR_VERSION}${TCL_MINOR_VERSION}s${EXEEXT}" ; then
+	    TCLSH_PROG="${TCL_BIN_DIR}/tclsh${TCL_MAJOR_VERSION}${TCL_MINOR_VERSION}s${EXEEXT}"
+	  elif test -f "${TCL_BIN_DIR}/tclsh${TCL_MAJOR_VERSION}${TCL_MINOR_VERSION}t${EXEEXT}" ; then
+	    TCLSH_PROG="${TCL_BIN_DIR}/tclsh${TCL_MAJOR_VERSION}${TCL_MINOR_VERSION}t${EXEEXT}"
+	  elif test -f "${TCL_BIN_DIR}/tclsh${TCL_MAJOR_VERSION}${TCL_MINOR_VERSION}st${EXEEXT}" ; then
+	    TCLSH_PROG="${TCL_BIN_DIR}/tclsh${TCL_MAJOR_VERSION}${TCL_MINOR_VERSION}st${EXEEXT}"
+	  fi
+	else
+	    TCLSH_PROG="${TCL_BIN_DIR}/tclsh"
+	fi
     else
-        # tclConfig.sh is in install location
-        if test "${TEA_PLATFORM}" = "windows"; then
-            TCLSH_PROG="tclsh${TCL_MAJOR_VERSION}${TCL_MINOR_VERSION}${EXEEXT}"
-        else
-            TCLSH_PROG="tclsh${TCL_MAJOR_VERSION}.${TCL_MINOR_VERSION}"
-        fi
-        list="`ls -d ${TCL_BIN_DIR}/../bin 2>/dev/null` \
-              `ls -d ${TCL_BIN_DIR}/..     2>/dev/null` \
-              `ls -d ${TCL_PREFIX}/bin     2>/dev/null`"
-        for i in $list ; do
-            if test -f "$i/${TCLSH_PROG}" ; then
-                REAL_TCL_BIN_DIR="`cd "$i"; pwd`/"
-                break
-            fi
-        done
-        TCLSH_PROG="${REAL_TCL_BIN_DIR}${TCLSH_PROG}"
+	# tclConfig.sh is in install location
+	if test "${TEA_PLATFORM}" = "windows"; then
+	    TCLSH_PROG="tclsh${TCL_MAJOR_VERSION}${TCL_MINOR_VERSION}${EXEEXT}"
+	else
+	    TCLSH_PROG="tclsh${TCL_MAJOR_VERSION}.${TCL_MINOR_VERSION}"
+	fi
+	list="`ls -d ${TCL_BIN_DIR}/../bin 2>/dev/null` \
+	      `ls -d ${TCL_BIN_DIR}/..     2>/dev/null` \
+	      `ls -d ${TCL_PREFIX}/bin     2>/dev/null`"
+	for i in $list ; do
+	    if test -f "$i/${TCLSH_PROG}" ; then
+		REAL_TCL_BIN_DIR="`cd "$i"; pwd`/"
+		break
+	    fi
+	done
+	TCLSH_PROG="${REAL_TCL_BIN_DIR}${TCLSH_PROG}"
     fi
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: ${TCLSH_PROG}" >&5
 printf "%s\n" "${TCLSH_PROG}" >&6; }
